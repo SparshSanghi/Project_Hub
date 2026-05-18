@@ -3,60 +3,56 @@ import axios from 'axios';
 
 function Requests() {
   const [requests, setRequests] = useState([]);
-
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
+  const fetchRequests = () => {
     axios.get('http://localhost:5000/api/projects/requests', {
       headers: { Authorization: token }
     }).then(res => setRequests(res.data));
-  }, []);
-
-  // ACCEPT
-  const handleAccept = async (id) => {
-    await axios.post(
-      `http://localhost:5000/api/projects/request/${id}/accept`,
-      {},
-      { headers: { Authorization: token } }
-    );
-
-    alert("Request accepted");
-    window.location.reload();
   };
 
-  // REJECT
-  const handleReject = async (id) => {
+  useEffect(() => {
+    fetchRequests();
+  }, [token]);
+
+  const handleApprove = async (id) => {
     await axios.post(
-      `http://localhost:5000/api/projects/request/${id}/reject`,
+      `http://localhost:5000/api/projects/requests/${id}/approve`,
       {},
       { headers: { Authorization: token } }
     );
+    fetchRequests();
+  };
 
-    alert("Request rejected");
-    window.location.reload();
+  const handleReject = async (id) => {
+    await axios.post(
+      `http://localhost:5000/api/projects/requests/${id}/reject`,
+      {},
+      { headers: { Authorization: token } }
+    );
+    fetchRequests();
   };
 
   return (
     <div>
-      <h2>Join Requests</h2>
+      <h2 className="section-title">Requests</h2>
 
       {requests.length === 0 && <p>No pending requests</p>}
 
       {requests.map(r => (
-        <div key={r._id} style={{
-          border: "1px solid #ccc",
-          padding: "10px",
-          margin: "10px",
-          borderRadius: "8px"
-        }}>
-          <p><b>User:</b> {r.user.name}</p>
-          <p><b>Project:</b> {r.project.title}</p>
+        <div key={r._id} className="card">
+          <p>
+            <b>{r.user.name}</b> wants to join <b>{r.project.title}</b>
+          </p>
 
-          <button onClick={() => handleAccept(r._id)}>
-            Accept
+          <button className="button" onClick={() => handleApprove(r._id)}>
+            Approve
           </button>
 
-          <button onClick={() => handleReject(r._id)} style={{ marginLeft: "10px" }}>
+          <button
+            className="button-secondary"
+            onClick={() => handleReject(r._id)}
+          >
             Reject
           </button>
         </div>

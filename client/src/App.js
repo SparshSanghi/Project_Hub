@@ -3,32 +3,34 @@ import './App.css';
 
 import Login from './pages/Login';
 import Home from './pages/Home';
-import MyProjects from './pages/MyProjects';
-import CreateProject from './components/CreateProject';
-import Requests from './pages/Requests';
 import Profile from './pages/Profile';
+import UserProfile from './pages/UserProfile';
+import MyProjects from './pages/MyProjects';
+import Requests from './pages/Requests';
+import CreateProject from './components/CreateProject';
+import ProjectDetails from './pages/ProjectDetails';
 
 function App() {
   const token = localStorage.getItem("token");
-  const [page, setPage] = useState("home");
 
-  // If not logged in → show login
-  if (!token) {
-    return <Login />;
-  }
+  const [page, setPage] = useState("home");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  if (!token) return <Login />;
 
   return (
     <div className="container">
 
       <h1 className="header">Project Hub</h1>
 
-      {/* Top Navigation Bar */}
+      {/* NAVBAR */}
       <div className="topbar">
 
-        {/* LEFT SIDE */}
+        {/* LEFT */}
         <div className="nav-left">
           <button className="button" onClick={() => setPage("home")}>
-            All Projects
+            Projects
           </button>
 
           <button className="button-secondary" onClick={() => setPage("my")}>
@@ -44,14 +46,14 @@ function App() {
           </button>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div style={{ display: "flex", gap: "10px" }}>
+        {/* RIGHT */}
+        <div className="nav-right">
 
           <button
             className="profile-btn"
             onClick={() => setPage("profile")}
           >
-            👤 Profile
+            👤
           </button>
 
           <button
@@ -65,15 +67,32 @@ function App() {
           </button>
 
         </div>
-
       </div>
 
-      {/* Page Rendering */}
-      {page === "home" && <Home />}
-      {page === "my" && <MyProjects />}
-      {page === "create" && <CreateProject />}
-      {page === "requests" && <Requests />}
+      {/* ROUTES */}
+      {page === "home" &&
+        <Home
+          setPage={setPage}
+          setSelectedUser={setSelectedUser}
+          setSelectedProject={setSelectedProject}
+        />
+      }
+
       {page === "profile" && <Profile />}
+
+      {page === "userProfile" &&
+        <UserProfile userId={selectedUser} />
+      }
+
+      {page === "my" && <MyProjects />}
+
+      {page === "create" && <CreateProject />}
+
+      {page === "requests" && <Requests />}
+
+      {page === "projectDetails" &&
+        <ProjectDetails projectId={selectedProject} />
+      }
 
     </div>
   );
